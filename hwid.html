@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIEN VIP — HWID MANAGER</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+–gold: #ffd200;
+–gold2: #ffaa00;
+–pink: #ff2d78;
+–cyan: #00f5ff;
+–purple: #9b30ff;
+–green: #00ff88;
+–dark: #06040f;
+–card-bg: rgba(12, 8, 28, 0.75);
+}
+
+body {
+font-family: ‘Rajdhani’, sans-serif;
+min-height: 100vh;
+background: var(–dark);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: flex-start;
+padding: 32px 16px 48px;
+overflow-x: hidden;
+color: #fff;
+}
+
+/* ─── BACKGROUND ─── */
+.bg-canvas {
+position: fixed;
+inset: 0;
+z-index: 0;
+background: radial-gradient(ellipse 80% 60% at 20% 0%, rgba(155,48,255,.22) 0%, transparent 60%),
+radial-gradient(ellipse 60% 50% at 80% 100%, rgba(255,45,120,.18) 0%, transparent 60%),
+radial-gradient(ellipse 50% 40% at 50% 50%, rgba(0,245,255,.08) 0%, transparent 70%),
+#06040f;
+}
+
+.grid-lines {
+position: fixed;
+inset: 0;
+z-index: 0;
+background-image:
+linear-gradient(rgba(0,245,255,.04) 1px, transparent 1px),
+linear-gradient(90deg, rgba(0,245,255,.04) 1px, transparent 1px);
+background-size: 44px 44px;
+mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+.scan-line {
+position: fixed;
+top: 0; left: 0; right: 0;
+height: 2px;
+background: linear-gradient(90deg, transparent, var(–cyan), transparent);
+opacity: 0.5;
+z-index: 0;
+animation: scanMove 5s linear infinite;
+}
+@keyframes scanMove {
+0%   { top: 0%; opacity: 0; }
+5%   { opacity: 0.5; }
+95%  { opacity: 0.5; }
+100% { top: 100%; opacity: 0; }
+}
+
+/* corner decorations */
+.corner {
+position: fixed;
+width: 60px; height: 60px;
+z-index: 0;
+opacity: 0.4;
+}
+.corner::before, .corner::after { content:’’; position:absolute; background:var(–cyan); }
+.corner.tl { top:16px; left:16px; }
+.corner.tl::before { top:0;left:0; width:2px;height:40px; }
+.corner.tl::after  { top:0;left:0; height:2px;width:40px; }
+.corner.tr { top:16px; right:16px; }
+.corner.tr::before { top:0;right:0; width:2px;height:40px; }
+.corner.tr::after  { top:0;right:0; height:2px;width:40px; }
+.corner.bl { bottom:16px; left:16px; }
+.corner.bl::before { bottom:0;left:0; width:2px;height:40px; }
+.corner.bl::after  { bottom:0;left:0; height:2px;width:40px; }
+.corner.br { bottom:16px; right:16px; }
+.corner.br::before { bottom:0;right:0; width:2px;height:40px; }
+.corner.br::after  { bottom:0;right:0; height:2px;width:40px; }
+
+/* ─── WRAPPER ─── */
+.wrapper {
+position: relative;
+z-index: 1;
+width: 100%;
+max-width: 480px;
+}
+
+/* ─── HEADER ─── */
+.header { text-align: center; margin-bottom: 32px; }
+
+.logo-chip {
+display: inline-flex; align-items: center; gap: 8px;
+background: rgba(0,245,255,.06);
+border: 1px solid rgba(0,245,255,.2);
+border-radius: 4px;
+padding: 5px 16px;
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.6rem;
+letter-spacing: 4px;
+color: var(–cyan);
+margin-bottom: 18px;
+}
+.live-dot {
+width: 6px; height: 6px;
+background: var(–green);
+border-radius: 50%;
+box-shadow: 0 0 8px var(–green);
+animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+0%,100% { transform:scale(1); opacity:1; }
+50% { transform:scale(1.5); opacity:.5; }
+}
+
+.logo-text {
+font-family: ‘Orbitron’, monospace;
+font-weight: 900;
+font-size: 2.8rem;
+letter-spacing: 10px;
+line-height: 1;
+background: linear-gradient(135deg, #fff 0%, var(–gold) 40%, var(–gold2) 60%, #fff 100%);
+background-size: 200% auto;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+animation: goldShine 3s linear infinite;
+text-shadow: none;
+position: relative;
+}
+@keyframes goldShine {
+0%   { background-position: 0% center; }
+100% { background-position: 200% center; }
+}
+
+.logo-sub {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.58rem;
+letter-spacing: 6px;
+color: rgba(255,255,255,.2);
+margin-top: 10px;
+}
+
+/* Tags */
+.tag-row {
+display: flex; flex-wrap: wrap; gap: 8px;
+justify-content: center;
+margin-top: 18px;
+}
+.tag {
+display: inline-flex; align-items: center; gap: 5px;
+padding: 4px 14px;
+border-radius: 4px;
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.58rem;
+letter-spacing: 2px;
+font-weight: 700;
+border: 1px solid;
+transition: all .2s;
+}
+.tag.gold  { background:rgba(255,210,0,.12); border-color:rgba(255,210,0,.5); color:var(–gold); }
+.tag.cyan  { background:rgba(0,245,255,.08); border-color:rgba(0,245,255,.35); color:var(–cyan); }
+.tag.pink  { background:rgba(255,45,120,.1); border-color:rgba(255,45,120,.4); color:var(–pink); }
+.tag.purple{ background:rgba(155,48,255,.1); border-color:rgba(155,48,255,.4); color:var(–purple); }
+.tag.green { background:rgba(0,255,136,.08); border-color:rgba(0,255,136,.35); color:var(–green); }
+
+/* ─── CARD ─── */
+.card {
+background: var(–card-bg);
+border: 1px solid rgba(255,255,255,.09);
+border-radius: 6px;
+padding: 24px 22px;
+margin-bottom: 16px;
+position: relative;
+overflow: hidden;
+backdrop-filter: blur(20px);
+box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.03) inset;
+}
+
+/* top accent bar */
+.card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0; height: 2px;
+background: linear-gradient(90deg, var(–purple), var(–cyan), var(–pink), var(–gold));
+background-size: 300% auto;
+animation: barShift 4s linear infinite;
+}
+@keyframes barShift {
+0%   { background-position: 0% center; }
+100% { background-position: 300% center; }
+}
+
+/* card glow corners */
+.card::after {
+content: ‘’;
+position: absolute;
+inset: 0;
+border-radius: 6px;
+background: radial-gradient(ellipse at top left, rgba(155,48,255,.06), transparent 60%),
+radial-gradient(ellipse at bottom right, rgba(0,245,255,.04), transparent 60%);
+pointer-events: none;
+}
+
+.card-head {
+display: flex; align-items: center; gap: 12px;
+margin-bottom: 20px;
+}
+
+.card-icon {
+width: 40px; height: 40px;
+border-radius: 6px;
+display: flex; align-items: center; justify-content: center;
+font-size: 1.1rem;
+flex-shrink: 0;
+}
+.card-icon.red { background: rgba(255,45,120,.15); border: 1px solid rgba(255,45,120,.3); box-shadow: 0 0 16px rgba(255,45,120,.12); }
+.card-icon.cyan { background: rgba(0,245,255,.1); border: 1px solid rgba(0,245,255,.25); box-shadow: 0 0 16px rgba(0,245,255,.08); }
+.card-icon.gold { background: rgba(255,210,0,.1); border: 1px solid rgba(255,210,0,.3); box-shadow: 0 0 16px rgba(255,210,0,.1); }
+
+.card-title {
+font-family: ‘Orbitron’, monospace;
+font-size: 0.75rem;
+font-weight: 700;
+letter-spacing: 4px;
+color: #fff;
+}
+.card-title span {
+display: block;
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.55rem;
+letter-spacing: 3px;
+color: rgba(255,255,255,.3);
+font-weight: 400;
+margin-top: 3px;
+}
+
+/* field label */
+.field-label {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.58rem;
+letter-spacing: 3px;
+color: rgba(255,255,255,.3);
+margin-bottom: 8px;
+display: flex; align-items: center; gap: 8px;
+}
+.field-label::after {
+content: ‘’;
+flex: 1;
+height: 1px;
+background: linear-gradient(90deg, rgba(255,255,255,.08), transparent);
+}
+
+/* inputs */
+textarea, input[type=text] {
+width: 100%;
+background: rgba(0,0,0,.5);
+border: 1px solid rgba(255,255,255,.08);
+border-radius: 5px;
+color: var(–cyan);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.75rem;
+padding: 12px 14px;
+outline: none;
+resize: none;
+transition: all .2s;
+line-height: 1.6;
+}
+textarea { height: 90px; }
+textarea::placeholder, input::placeholder { color: rgba(255,255,255,.1); }
+textarea:focus, input:focus {
+border-color: rgba(0,245,255,.35);
+background: rgba(0,40,50,.3);
+box-shadow: 0 0 0 3px rgba(0,245,255,.06), 0 0 20px rgba(0,245,255,.06);
+}
+
+/* divider */
+.divider {
+height: 1px;
+background: linear-gradient(90deg, transparent, rgba(155,48,255,.3), rgba(0,245,255,.2), transparent);
+margin: 18px 0;
+}
+
+/* ─── BUTTONS ─── */
+.btn-row { display: flex; gap: 10px; }
+
+.btn {
+flex: 1;
+padding: 14px 10px;
+border-radius: 5px;
+font-family: ‘Orbitron’, monospace;
+font-size: 0.65rem;
+font-weight: 700;
+letter-spacing: 3px;
+cursor: pointer;
+border: none;
+outline: none;
+position: relative;
+overflow: hidden;
+transition: all .2s;
+text-transform: uppercase;
+}
+
+.btn::before {
+content: ‘’;
+position: absolute;
+top: 0; left: -100%; width: 100%; height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+transition: left .4s;
+}
+.btn:hover::before { left: 100%; }
+.btn:active { transform: scale(.98); }
+
+.btn-main {
+background: linear-gradient(135deg, var(–gold) 0%, var(–gold2) 100%);
+color: #000;
+box-shadow: 0 4px 24px rgba(255,210,0,.35), 0 1px 0 rgba(255,255,255,.3) inset;
+}
+.btn-main:hover { box-shadow: 0 8px 36px rgba(255,210,0,.55); transform: translateY(-1px); }
+.btn-main:disabled {
+background: rgba(30,25,50,.8);
+color: rgba(255,255,255,.15);
+box-shadow: none;
+cursor: not-allowed;
+transform: none;
+}
+
+.btn-secondary {
+background: rgba(255,45,120,.08);
+border: 1px solid rgba(255,45,120,.35);
+color: var(–pink);
+box-shadow: 0 0 20px rgba(255,45,120,.08);
+}
+.btn-secondary:hover { background:rgba(255,45,120,.15); box-shadow: 0 4px 20px rgba(255,45,120,.25); transform:translateY(-1px); }
+
+.btn-cyan {
+background: rgba(0,245,255,.08);
+border: 1px solid rgba(0,245,255,.3);
+color: var(–cyan);
+box-shadow: 0 0 20px rgba(0,245,255,.06);
+}
+.btn-cyan:hover { background:rgba(0,245,255,.14); box-shadow: 0 4px 20px rgba(0,245,255,.2); transform:translateY(-1px); }
+
+/* ─── STATUS PANEL ─── */
+.status-panel {
+background: rgba(0,0,0,.4);
+border: 1px solid rgba(0,245,255,.1);
+border-radius: 5px;
+padding: 12px 14px;
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.65rem;
+line-height: 1.9;
+color: rgba(255,255,255,.25);
+min-height: 72px;
+position: relative;
+}
+.status-panel .log-line { display: block; }
+.status-panel .log-line.ok   { color: var(–green); }
+.status-panel .log-line.err  { color: var(–pink); }
+.status-panel .log-line.info { color: var(–cyan); }
+.status-panel .log-line.warn { color: var(–gold); }
+.status-panel .prompt { color: rgba(0,245,255,.4); margin-right: 8px; }
+
+/* cursor blink */
+.cursor {
+display: inline-block;
+width: 7px; height: 12px;
+background: var(–cyan);
+vertical-align: middle;
+animation: blink .9s step-end infinite;
+margin-left: 4px;
+opacity: .7;
+}
+@keyframes blink { 0%,100%{opacity:.7} 50%{opacity:0} }
+
+/* ─── STATS ROW ─── */
+.stats-row {
+display: flex; gap: 10px;
+margin-bottom: 16px;
+}
+.stat-box {
+flex: 1;
+background: rgba(0,0,0,.35);
+border: 1px solid rgba(255,255,255,.07);
+border-radius: 5px;
+padding: 12px 10px;
+text-align: center;
+position: relative;
+overflow: hidden;
+}
+.stat-box::before {
+content:’’;
+position:absolute;
+top:0;left:0;right:0;
+height:1px;
+}
+.stat-box.s1::before { background:linear-gradient(90deg,transparent,var(–gold),transparent); }
+.stat-box.s2::before { background:linear-gradient(90deg,transparent,var(–cyan),transparent); }
+.stat-box.s3::before { background:linear-gradient(90deg,transparent,var(–pink),transparent); }
+
+.stat-val {
+font-family: ‘Orbitron’, monospace;
+font-size: 1.4rem;
+font-weight: 900;
+display: block;
+line-height: 1;
+margin-bottom: 5px;
+}
+.stat-box.s1 .stat-val { color: var(–gold); text-shadow: 0 0 20px rgba(255,210,0,.5); }
+.stat-box.s2 .stat-val { color: var(–cyan); text-shadow: 0 0 20px rgba(0,245,255,.5); }
+.stat-box.s3 .stat-val { color: var(–pink); text-shadow: 0 0 20px rgba(255,45,120,.5); }
+
+.stat-lbl {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.52rem;
+letter-spacing: 2px;
+color: rgba(255,255,255,.25);
+}
+
+/* ─── TOAST ─── */
+#toast {
+position: fixed;
+bottom: 28px; left: 50%;
+transform: translateX(-50%) translateY(80px);
+opacity: 0;
+transition: all .4s cubic-bezier(.34,1.56,.64,1);
+border-radius: 6px;
+padding: 12px 22px;
+font-family: ‘Rajdhani’, sans-serif;
+font-weight: 600;
+font-size: .85rem;
+letter-spacing: .5px;
+pointer-events: none;
+z-index: 999;
+white-space: nowrap;
+backdrop-filter: blur(20px);
+border: 1px solid;
+}
+#toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+#toast.ok   { background:rgba(0,20,12,.92); border-color:rgba(0,255,136,.4); color:var(–green); box-shadow:0 8px 30px rgba(0,255,136,.15); }
+#toast.err  { background:rgba(25,0,10,.92); border-color:rgba(255,45,120,.4); color:var(–pink); box-shadow:0 8px 30px rgba(255,45,120,.15); }
+#toast.warn { background:rgba(20,14,0,.92); border-color:rgba(255,210,0,.4); color:var(–gold); box-shadow:0 8px 30px rgba(255,210,0,.12); }
+
+/* spinner */
+.spin { display:inline-block; width:12px;height:12px; border:2px solid rgba(0,0,0,.2); border-top-color:#000; border-radius:50%; animation:rot .6s linear infinite; vertical-align:middle; margin-right:7px; }
+@keyframes rot { to{transform:rotate(360deg)} }
+
+/* footer */
+.footer {
+text-align: center;
+margin-top: 24px;
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.52rem;
+letter-spacing: 4px;
+color: rgba(255,255,255,.08);
+}
+.footer strong { color:rgba(255,210,0,.25); }
+</style>
+
+</head>
+<body>
+
+<div class="bg-canvas"></div>
+<div class="grid-lines"></div>
+<div class="scan-line"></div>
+<div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+
+  <div class="header">
+    <div class="logo-chip">
+      <span class="live-dot"></span>
+      HWID MANAGER — JSONBIN CLOUD
+    </div>
+    <div class="logo-text">HIEN VIP</div>
+    <div class="logo-sub">HARDWARE ID CONTROL PANEL v2.0</div>
+    <div class="tag-row">
+      <span class="tag gold">★ PREMIUM</span>
+      <span class="tag cyan">◈ JSONBIN</span>
+      <span class="tag pink">⚡ INSTANT</span>
+      <span class="tag purple">⬡ MULTI-USER</span>
+      <span class="tag green">● LIVE</span>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+
+  <div class="stats-row">
+    <div class="stat-box s1">
+      <span class="stat-val" id="totalCount">–</span>
+      <span class="stat-lbl">TOTAL HWID</span>
+    </div>
+    <div class="stat-box s2">
+      <span class="stat-val" id="resetCount">0</span>
+      <span class="stat-lbl">RESET TODAY</span>
+    </div>
+    <div class="stat-box s3">
+      <span class="stat-val" id="sessionCount">0</span>
+      <span class="stat-lbl">SESSION OPS</span>
+    </div>
+  </div>
+
+  <!-- RESET CARD -->
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon red">🗑️</div>
+      <div class="card-title">
+        RESET HWID
+        <span>XÓA HWID KHỎI DATABASE</span>
+      </div>
+    </div>
+
+```
+<div class="field-label">◆ HWID CẦN RESET</div>
+<textarea id="oldHwid" placeholder="— Dán HWID của user vào đây..."></textarea>
+
+<div class="divider"></div>
+
+<div class="btn-row">
+  <button class="btn btn-main" id="btnReset" onclick="resetHWID()">
+    🗑️ &nbsp;RESET HWID
+  </button>
+  <button class="btn btn-secondary" onclick="clearField()">
+    ✕ XÓA
+  </button>
+</div>
+```
+
+  </div>
+
+  <!-- CHECK CARD -->
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon cyan">🔍</div>
+      <div class="card-title">
+        CHECK HWID
+        <span>KIỂM TRA TRẠNG THÁI</span>
+      </div>
+    </div>
+
+```
+<div class="field-label">◆ HWID CẦN KIỂM TRA</div>
+<textarea id="checkHwid" placeholder="— Dán HWID cần kiểm tra..."></textarea>
+
+<div class="divider"></div>
+
+<div class="btn-row">
+  <button class="btn btn-cyan" onclick="checkHWID()">
+    🔍 &nbsp;CHECK HWID
+  </button>
+  <button class="btn btn-secondary" onclick="loadAll()">
+    ♻ RELOAD
+  </button>
+</div>
+```
+
+  </div>
+
+  <!-- LOG CARD -->
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon gold">📋</div>
+      <div class="card-title">
+        SYSTEM LOG
+        <span>REAL-TIME OPERATION LOG</span>
+      </div>
+    </div>
+    <div class="status-panel" id="logPanel">
+      <span class="log-line info"><span class="prompt">$</span>Đang khởi tạo hệ thống...</span>
+      <span class="cursor"></span>
+    </div>
+  </div>
+
+  <div class="footer"><strong>HIEN VIP</strong> &nbsp;©&nbsp; 2025 — INTERNAL USE ONLY — ALL RIGHTS RESERVED</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const JSONBIN_URL = "https://api.jsonbin.io/v3/b/69f70bdcaaba8821976677a0";
+const MASTER_KEY  = "$2a$10$3dZhQhscBbWpVvSlJLEfve1EAcLFMYAX/TAw06LndJOcKfOLQe2k2";
+
+let toastT = null;
+let sessionOps = 0;
+let resetToday = parseInt(localStorage.getItem('resetToday') || '0');
+const todayKey = new Date().toDateString();
+if (localStorage.getItem('resetDay') !== todayKey) {
+  resetToday = 0;
+  localStorage.setItem('resetDay', todayKey);
+  localStorage.setItem('resetToday', '0');
+}
+
+document.getElementById('resetCount').textContent = resetToday;
+
+function log(msg, type = 'info') {
+  const p = document.getElementById('logPanel');
+  const line = document.createElement('span');
+  line.className = 'log-line ' + type;
+  const now = new Date();
+  const t = `[${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}]`;
+  line.innerHTML = `<span class="prompt">${t}</span>${msg}`;
+  const cursor = p.querySelector('.cursor');
+  if (cursor) cursor.remove();
+  p.appendChild(line);
+  const cur = document.createElement('span');
+  cur.className = 'cursor';
+  p.appendChild(cur);
+  p.scrollTop = p.scrollHeight;
+  // keep max 10 lines
+  const lines = p.querySelectorAll('.log-line');
+  if (lines.length > 10) lines[0].remove();
+}
+
+function toast(msg, type = 'warn') {
+  const t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.className = '', 3500);
+}
+
+function clearField() {
+  document.getElementById('oldHwid').value = '';
+  document.getElementById('oldHwid').focus();
+}
+
+async function loadAll() {
+  log('Đang tải dữ liệu từ server...', 'info');
+  try {
+    const r = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': MASTER_KEY } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    const hwids = d.record?.hwids || [];
+    document.getElementById('totalCount').textContent = hwids.length;
+    log(`Tải thành công — ${hwids.length} HWID trong database.`, 'ok');
+  } catch(e) {
+    log('Lỗi kết nối: ' + e.message, 'err');
+    document.getElementById('totalCount').textContent = '!';
+  }
+}
+
+async function resetHWID() {
+  const hwid = document.getElementById('oldHwid').value.trim();
+  if (!hwid) { toast('⚠️ Vui lòng nhập HWID cần reset!', 'warn'); return; }
+
+  const btn = document.getElementById('btnReset');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>ĐANG XỬ LÝ...';
+  log(`Đang xử lý reset: ${hwid.slice(0,20)}...`, 'info');
+
+  try {
+    const r = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': MASTER_KEY } });
+    if (!r.ok) throw new Error('Kết nối thất bại (' + r.status + ')');
+    const d = await r.json();
+    const hwids = d.record?.hwids || [];
+
+    const found = hwids.find(e => e.hwid === hwid);
+    if (!found) {
+      log(`HWID không tồn tại trong database.`, 'err');
+      toast('❌ Không tìm thấy HWID này!', 'err');
+      btn.disabled = false;
+      btn.innerHTML = '🗑️ &nbsp;RESET HWID';
+      return;
+    }
+
+    const newArr = hwids.filter(e => e.hwid !== hwid);
+    const p = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY },
+      body: JSON.stringify({ hwids: newArr })
+    });
+    if (!p.ok) throw new Error('Cập nhật thất bại (' + p.status + ')');
+
+    document.getElementById('oldHwid').value = '';
+    document.getElementById('totalCount').textContent = newArr.length;
+
+    sessionOps++;
+    resetToday++;
+    localStorage.setItem('resetToday', resetToday);
+    document.getElementById('resetCount').textContent = resetToday;
+    document.getElementById('sessionCount').textContent = sessionOps;
+
+    log(`Reset thành công! Database còn ${newArr.length} HWID.`, 'ok');
+    toast(`✅ Reset thành công! Còn ${newArr.length} HWID.`, 'ok');
+  } catch(e) {
+    log('Lỗi: ' + e.message, 'err');
+    toast('❌ ' + e.message, 'err');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🗑️ &nbsp;RESET HWID';
+}
+
+async function checkHWID() {
+  const hwid = document.getElementById('checkHwid').value.trim();
+  if (!hwid) { toast('⚠️ Vui lòng nhập HWID cần kiểm tra!', 'warn'); return; }
+
+  log(`Đang kiểm tra HWID: ${hwid.slice(0,20)}...`, 'info');
+  try {
+    const r = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': MASTER_KEY } });
+    if (!r.ok) throw new Error('Kết nối thất bại');
+    const d = await r.json();
+    const hwids = d.record?.hwids || [];
+    const found = hwids.find(e => e.hwid === hwid);
+
+    if (found) {
+      log(`HWID ĐÃ ĐĂNG KÝ — User: ${found.user || 'N/A'}`, 'ok');
+      toast(`✅ HWID HỢP LỆ — ${found.user || 'Unknown'}`, 'ok');
+    } else {
+      log(`HWID KHÔNG TỒN TẠI trong database.`, 'warn');
+      toast(`⚠️ HWID chưa đăng ký!`, 'warn');
+    }
+
+    sessionOps++;
+    document.getElementById('sessionCount').textContent = sessionOps;
+  } catch(e) {
+    log('Lỗi: ' + e.message, 'err');
+    toast('❌ ' + e.message, 'err');
+  }
+}
+
+// init
+window.addEventListener('load', () => {
+  log('Hệ thống khởi động — HIEN VIP v2.0', 'ok');
+  setTimeout(loadAll, 600);
+});
+</script>
+
+</body>
+</html>
