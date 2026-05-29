@@ -1,241 +1,206 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HIEN VIP — HWID MANAGER</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Share Tech Mono',monospace;min-height:100vh;background:#07041a;display:flex;flex-direction:column;align-items:center;padding:32px 14px 60px;overflow-x:hidden;color:#fff;position:relative}
-body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 50% at 15% 0%,rgba(140,0,255,.38) 0%,transparent 65%),radial-gradient(ellipse 60% 45% at 85% 95%,rgba(255,0,100,.3) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 50% 50%,rgba(0,200,255,.12) 0%,transparent 70%),#07041a}
-body::after{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,220,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,220,255,.04) 1px,transparent 1px);background-size:42px 42px}
-.scan{position:fixed;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#00f5ff,transparent);opacity:.5;z-index:3;animation:scan 5s linear infinite}
-@keyframes scan{0%{top:-2px;opacity:0}4%{opacity:.5}96%{opacity:.5}100%{top:100%;opacity:0}}
-.wrap{position:relative;z-index:1;width:100%;max-width:460px}
-.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(0,245,255,.3);background:rgba(0,245,255,.06);border-radius:4px;padding:5px 18px;font-size:.58rem;letter-spacing:4px;color:#00f5ff;margin-bottom:16px}
-.dot{width:7px;height:7px;background:#00ff88;border-radius:50%;box-shadow:0 0 10px #00ff88;animation:blink 1.4s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:2.7rem;letter-spacing:10px;background:linear-gradient(135deg,#fff 0%,#ffe566 35%,#ffaa00 60%,#fff 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shine 3s linear infinite;line-height:1}
-@keyframes shine{0%{background-position:0% center}100%{background-position:200% center}}
-.sub{font-size:.55rem;letter-spacing:6px;color:rgba(255,255,255,.18);margin-top:8px}
-.tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
-.tag{padding:4px 14px;border-radius:4px;font-size:.55rem;letter-spacing:2px;border:1px solid;font-weight:700}
-.tg{background:rgba(255,210,0,.12);border-color:rgba(255,210,0,.5);color:#ffd200}
-.tc{background:rgba(0,245,255,.08);border-color:rgba(0,245,255,.35);color:#00f5ff}
-.tp{background:rgba(255,45,120,.1);border-color:rgba(255,45,120,.4);color:#ff2d78}
-.tv{background:rgba(155,48,255,.1);border-color:rgba(155,48,255,.4);color:#9b30ff}
-.tn{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.35);color:#00ff88}
-.hdr{text-align:center;margin-bottom:28px}
-.stats{display:flex;gap:10px;margin-bottom:14px}
-.sbox{flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:14px 8px;text-align:center;position:relative;overflow:hidden}
-.sbox::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.s1::before{background:linear-gradient(90deg,transparent,#ffd200,transparent)}
-.s2::before{background:linear-gradient(90deg,transparent,#00f5ff,transparent)}
-.s3::before{background:linear-gradient(90deg,transparent,#ff2d78,transparent)}
-.sval{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;display:block;line-height:1;margin-bottom:5px}
-.s1 .sval{color:#ffd200;text-shadow:0 0 20px rgba(255,210,0,.6)}
-.s2 .sval{color:#00f5ff;text-shadow:0 0 20px rgba(0,245,255,.6)}
-.s3 .sval{color:#ff2d78;text-shadow:0 0 20px rgba(255,45,120,.6)}
-.slbl{font-size:.5rem;letter-spacing:2px;color:rgba(255,255,255,.25)}
-.card{background:rgba(10,6,24,.82);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:22px 18px;margin-bottom:14px;position:relative;overflow:hidden;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.6)}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#9b30ff,#00f5ff,#ff2d78,#ffd200);background-size:300% auto;animation:bar 4s linear infinite}
-@keyframes bar{0%{background-position:0% center}100%{background-position:300% center}}
-.card::after{content:'';position:absolute;inset:0;border-radius:8px;background:radial-gradient(ellipse at top left,rgba(155,48,255,.07),transparent 60%),radial-gradient(ellipse at bottom right,rgba(0,245,255,.05),transparent 60%);pointer-events:none}
-.chead{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.cico{width:42px;height:42px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
-.ired{background:rgba(255,45,120,.15);border:1px solid rgba(255,45,120,.35);box-shadow:0 0 18px rgba(255,45,120,.15)}
-.icyan{background:rgba(0,245,255,.1);border:1px solid rgba(0,245,255,.28);box-shadow:0 0 18px rgba(0,245,255,.1)}
-.igold{background:rgba(255,210,0,.1);border:1px solid rgba(255,210,0,.3);box-shadow:0 0 18px rgba(255,210,0,.1)}
-.ctitle{font-family:'Orbitron',monospace;font-size:.72rem;font-weight:700;letter-spacing:4px;color:#fff}
-.csub{font-size:.52rem;letter-spacing:3px;color:rgba(255,255,255,.28);margin-top:3px}
-.lbl{font-size:.55rem;letter-spacing:3px;color:rgba(255,255,255,.28);margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.08),transparent)}
-textarea{width:100%;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.09);border-radius:5px;color:#00f5ff;font-family:'Share Tech Mono',monospace;font-size:.75rem;padding:12px 14px;outline:none;resize:none;height:88px;line-height:1.6;transition:all .2s}
-textarea::placeholder{color:rgba(255,255,255,.1)}
-textarea:focus{border-color:rgba(0,245,255,.4);background:rgba(0,40,55,.35);box-shadow:0 0 0 3px rgba(0,245,255,.07)}
-.div{height:1px;background:linear-gradient(90deg,transparent,rgba(155,48,255,.35),rgba(0,245,255,.2),transparent);margin:16px 0}
-.brow{display:flex;gap:10px}
-.btn{flex:1;padding:14px 10px;border-radius:5px;font-family:'Orbitron',monospace;font-size:.6rem;font-weight:700;letter-spacing:3px;cursor:pointer;border:none;outline:none;position:relative;overflow:hidden;transition:all .2s;text-transform:uppercase}
-.btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transition:left .4s}
-.btn:hover::before{left:100%}
-.btn:active{transform:scale(.97)}
-.bmain{background:linear-gradient(135deg,#ffd200 0%,#ffaa00 100%);color:#000;box-shadow:0 4px 24px rgba(255,210,0,.4),0 1px 0 rgba(255,255,255,.3) inset;animation:bglow 3s ease-in-out infinite}
-@keyframes bglow{0%,100%{box-shadow:0 4px 24px rgba(255,210,0,.4)}50%{box-shadow:0 6px 36px rgba(255,210,0,.65)}}
-.bmain:hover{transform:translateY(-2px);box-shadow:0 10px 40px rgba(255,210,0,.6)}
-.bmain:disabled{background:rgba(25,20,45,.8);color:rgba(255,255,255,.15);box-shadow:none;cursor:not-allowed;transform:none;animation:none}
-.bpink{background:rgba(255,45,120,.09);border:1px solid rgba(255,45,120,.38);color:#ff2d78}
-.bpink:hover{background:rgba(255,45,120,.18);box-shadow:0 4px 20px rgba(255,45,120,.28);transform:translateY(-1px)}
-.bcyan{background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.32);color:#00f5ff}
-.bcyan:hover{background:rgba(0,245,255,.15);box-shadow:0 4px 20px rgba(0,245,255,.22);transform:translateY(-1px)}
-.logbox{background:rgba(0,0,0,.45);border:1px solid rgba(0,245,255,.1);border-radius:5px;padding:12px 14px;font-size:.63rem;line-height:2;color:rgba(255,255,255,.2);min-height:80px;overflow-y:auto;max-height:140px}
-.lok{color:#00ff88}.lerr{color:#ff2d78}.linfo{color:#00f5ff}.lwarn{color:#ffd200}
-.prm{color:rgba(0,245,255,.4);margin-right:6px}
-.cur{display:inline-block;width:6px;height:11px;background:#00f5ff;vertical-align:middle;animation:cur .9s step-end infinite;margin-left:3px;opacity:.7}
-@keyframes cur{0%,100%{opacity:.7}50%{opacity:0}}
-#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);border-radius:6px;padding:12px 22px;font-size:.82rem;font-weight:600;pointer-events:none;z-index:999;white-space:nowrap;backdrop-filter:blur(20px);border:1px solid}
-#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-#toast.ok{background:rgba(0,18,10,.93);border-color:rgba(0,255,136,.4);color:#00ff88;box-shadow:0 8px 28px rgba(0,255,136,.18)}
-#toast.err{background:rgba(24,0,10,.93);border-color:rgba(255,45,120,.4);color:#ff2d78;box-shadow:0 8px 28px rgba(255,45,120,.18)}
-#toast.warn{background:rgba(18,12,0,.93);border-color:rgba(255,210,0,.4);color:#ffd200;box-shadow:0 8px 28px rgba(255,210,0,.12)}
-.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(0,0,0,.25);border-top-color:#000;border-radius:50%;animation:rot .6s linear infinite;vertical-align:middle;margin-right:7px}
-@keyframes rot{to{transform:rotate(360deg)}}
-.foot{text-align:center;margin-top:22px;font-size:.5rem;letter-spacing:4px;color:rgba(255,255,255,.08)}
-.foot b{color:rgba(255,210,0,.22)}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao Diện Điều Khiển Thử Nghiệm</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .panel-container {
+            background-color: #1a1a1a;
+            border: 3px solid #00ff00;
+            border-radius: 10px;
+            padding: 25px;
+            width: 320px;
+            box-shadow: 0 0 15px #00ff00;
+            text-align: center;
+        }
+        h2 {
+            font-size: 16px;
+            color: #fffb00;
+            text-shadow: 0 0 5px #fffb00;
+            margin-top: 0;
+        }
+        .divider {
+            border-top: 1px dashed #555;
+            margin: 15px 0;
+        }
+        .status-box {
+            background-color: #262626;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .status-die {
+            background-color: #ff3333;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            box-shadow: 0 0 8px #ff3333;
+        }
+        .status-run {
+            background-color: #00ff00;
+            color: black;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            box-shadow: 0 0 8px #00ff00;
+        }
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .input-group label {
+            font-size: 14px;
+            color: #ccc;
+        }
+        .input-group input {
+            background-color: #262626;
+            border: 1px solid #00ff00;
+            color: #fff;
+            padding: 5px;
+            width: 80px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            width: 48%;
+            padding: 10px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-start {
+            background-color: #00cc44;
+            color: white;
+        }
+        .btn-start:hover {
+            background-color: #00ff55;
+            box-shadow: 0 0 10px #00ff55;
+        }
+        .btn-stop {
+            background-color: #cc0000;
+            color: white;
+        }
+        button:disabled {
+            background-color: #555;
+            color: #aaa;
+            cursor: not-allowed;
+            box-shadow: none !important;
+        }
+        .log-box {
+            font-size: 13px;
+            color: #00fffa;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-<div class="scan"></div>
-<div class="wrap">
 
-  <div class="hdr">
-    <div class="chip"><span class="dot"></span>HWID MANAGER — JSONBIN CLOUD</div>
-    <div class="logo">HIEN VIP</div>
-    <div class="sub">HARDWARE ID CONTROL PANEL v2.0</div>
-    <div class="tags">
-      <span class="tag tg">★ PREMIUM</span>
-      <span class="tag tc">◈ JSONBIN</span>
-      <span class="tag tp">⚡ INSTANT</span>
-      <span class="tag tv">⬡ MULTI-USER</span>
-      <span class="tag tn">● LIVE</span>
+    <div class="panel-container">
+        <h2>⚡ TOOLS ĐỖ HỒNG PHÚC ⚡</h2>
+        <div class="divider"></div>
+
+        <div class="status-box">
+            <span>Trạng thái Nick:</span>
+            <span id="system-status" class="status-die">DIE</span>
+        </div>
+
+        <div class="input-group">
+            <label>Số lần báo cáo (Loops):</label>
+            <input type="number" id="loops" value="40" min="1">
+        </div>
+
+        <div class="input-group">
+            <label>Độ trễ tốc độ (ms):</label>
+            <input type="number" id="delay" value="100" min="10">
+        </div>
+
+        <div class="button-group">
+            <button id="btn-start" class="btn-start">BẮT ĐẦU</button>
+            <button id="btn-stop" class="btn-stop" disabled>TẠM DỪNG</button>
+        </div>
+
+        <div class="divider"></div>
+        <div class="log-box">
+            <p>Trạng thái: <span id="log-text">Đang chờ lệnh...</span></p>
+        </div>
     </div>
-  </div>
 
-  <div class="stats">
-    <div class="sbox s1"><span class="sval" id="totalCount">–</span><span class="slbl">TOTAL HWID</span></div>
-    <div class="sbox s2"><span class="sval" id="resetCount">0</span><span class="slbl">RESET TODAY</span></div>
-    <div class="sbox s3"><span class="sval" id="sessionCount">0</span><span class="slbl">SESSION OPS</span></div>
-  </div>
+    <script>
+        const btnStart = document.getElementById('btn-start');
+        const btnStop = document.getElementById('btn-stop');
+        const systemStatus = document.getElementById('system-status');
+        const logText = document.getElementById('log-text');
 
-  <div class="card">
-    <div class="chead">
-      <div class="cico ired">🗑️</div>
-      <div><div class="ctitle">RESET HWID</div><div class="csub">XÓA HWID KHỎI DATABASE</div></div>
-    </div>
-    <div class="lbl">◆ HWID CẦN RESET</div>
-    <textarea id="oldHwid" placeholder="— Dán HWID của user vào đây..."></textarea>
-    <div class="div"></div>
-    <div class="brow">
-      <button class="btn bmain" id="btnReset" onclick="resetHWID()">🗑️ &nbsp;RESET HWID</button>
-      <button class="btn bpink" onclick="document.getElementById('oldHwid').value=''">✕ XÓA</button>
-    </div>
-  </div>
+        let isRunning = false;
+        let currentLoop = 0;
+        let timer = null;
 
-  <div class="card">
-    <div class="chead">
-      <div class="cico icyan">🔍</div>
-      <div><div class="ctitle">CHECK HWID</div><div class="csub">KIỂM TRA TRẠNG THÁI</div></div>
-    </div>
-    <div class="lbl">◆ HWID CẦN KIỂM TRA</div>
-    <textarea id="checkHwid" placeholder="— Dán HWID cần kiểm tra..."></textarea>
-    <div class="div"></div>
-    <div class="brow">
-      <button class="btn bcyan" onclick="checkHWID()">🔍 &nbsp;CHECK HWID</button>
-      <button class="btn bpink" onclick="loadAll()">♻ RELOAD</button>
-    </div>
-  </div>
+        btnStart.addEventListener('click', () => {
+            const totalLoops = parseInt(document.getElementById('loops').value) || 40;
+            const delay = parseInt(document.getElementById('delay').value) || 100;
 
-  <div class="card">
-    <div class="chead">
-      <div class="cico igold">📋</div>
-      <div><div class="ctitle">SYSTEM LOG</div><div class="csub">REAL-TIME OPERATION LOG</div></div>
-    </div>
-    <div class="logbox" id="logPanel">
-      <span class="linfo"><span class="prm">$</span>Đang khởi tạo hệ thống...</span>
-      <span class="cur"></span>
-    </div>
-  </div>
+            isRunning = true;
+            currentLoop = 0;
+            
+            systemStatus.textContent = "LIVE";
+            systemStatus.className = "status-run";
+            btnStart.disabled = true;
+            btnStop.disabled = false;
 
-  <div class="foot"><b>HIEN VIP</b> &nbsp;© 2025 — INTERNAL USE ONLY</div>
-</div>
-<div id="toast"></div>
+            function runSimulation() {
+                if (!isRunning) return;
 
-<script>
-const URL_ = "https://api.jsonbin.io/v3/b/69f70bdcaaba8821976677a0";
-const KEY_  = "$2a$10$3dZhQhscBbWpVvSlJLEfve1EAcLFMYAX/TAw06LndJOcKfOLQe2k2";
-let tT=null,sOps=0;
-let rToday=parseInt(localStorage.getItem('rToday')||'0');
-if(localStorage.getItem('rDay')!==new Date().toDateString()){rToday=0;localStorage.setItem('rDay',new Date().toDateString());localStorage.setItem('rToday','0')}
-document.getElementById('resetCount').textContent=rToday;
+                if (currentLoop < totalLoops) {
+                    currentLoop++;
+                    logText.textContent = `🌀 Đang quét FB... (${currentLoop}/${totalLoops})`;
+                    timer = setTimeout(runSimulation, delay);
+                } else {
+                    stopSimulation("Hoàn thành quá trình quét mô phỏng!");
+                }
+            }
 
-function log(msg,type='linfo'){
-  const p=document.getElementById('logPanel');
-  const d=new Date(),t=`[${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}]`;
-  const c=p.querySelector('.cur');if(c)c.remove();
-  const s=document.createElement('div');
-  s.innerHTML=`<span class="${type}"><span class="prm">${t}</span>${msg}</span>`;
-  p.appendChild(s);
-  const cur=document.createElement('span');cur.className='cur';p.appendChild(cur);
-  p.scrollTop=p.scrollHeight;
-  const ls=p.querySelectorAll('div');if(ls.length>10)ls[0].remove();
-}
+            runSimulation();
+        });
 
-function toast(msg,type='warn'){
-  const t=document.getElementById('toast');
-  t.innerHTML=msg;t.className='show '+type;
-  clearTimeout(tT);tT=setTimeout(()=>t.className='',3500);
-}
+        btnStop.addEventListener('click', () => {
+            stopSimulation("TẠM DỪNG");
+        });
 
-async function loadAll(){
-  log('Đang tải dữ liệu từ server...','linfo');
-  try{
-    const r=await fetch(URL_+'/latest',{headers:{'X-Master-Key':KEY_}});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const d=await r.json();
-    const h=d.record?.hwids||[];
-    document.getElementById('totalCount').textContent=h.length;
-    log('Tải thành công — '+h.length+' HWID trong database.','lok');
-  }catch(e){log('Lỗi kết nối: '+e.message,'lerr');document.getElementById('totalCount').textContent='!'}
-}
-
-async function resetHWID(){
-  const hwid=document.getElementById('oldHwid').value.trim();
-  if(!hwid){toast('⚠️ Vui lòng nhập HWID cần reset!','warn');return}
-  const btn=document.getElementById('btnReset');
-  btn.disabled=true;btn.innerHTML='<span class="spin"></span>ĐANG XỬ LÝ...';
-  log('Đang xử lý reset: '+hwid.slice(0,20)+'...','linfo');
-  try{
-    const r=await fetch(URL_+'/latest',{headers:{'X-Master-Key':KEY_}});
-    if(!r.ok)throw new Error('Kết nối thất bại ('+r.status+')');
-    const d=await r.json();const h=d.record?.hwids||[];
-    if(!h.find(e=>e.hwid===hwid)){
-      log('HWID không tồn tại trong database.','lerr');
-      toast('❌ Không tìm thấy HWID này!','err');
-      btn.disabled=false;btn.innerHTML='🗑️ &nbsp;RESET HWID';return;
-    }
-    const nH=h.filter(e=>e.hwid!==hwid);
-    const p=await fetch(URL_,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY_},body:JSON.stringify({hwids:nH})});
-    if(!p.ok)throw new Error('Cập nhật thất bại ('+p.status+')');
-    document.getElementById('oldHwid').value='';
-    document.getElementById('totalCount').textContent=nH.length;
-    sOps++;rToday++;
-    localStorage.setItem('rToday',rToday);
-    document.getElementById('resetCount').textContent=rToday;
-    document.getElementById('sessionCount').textContent=sOps;
-    log('Reset thành công! Database còn '+nH.length+' HWID.','lok');
-    toast('✅ Reset thành công! Còn '+nH.length+' HWID.','ok');
-  }catch(e){log('Lỗi: '+e.message,'lerr');toast('❌ '+e.message,'err')}
-  btn.disabled=false;btn.innerHTML='🗑️ &nbsp;RESET HWID';
-}
-
-async function checkHWID(){
-  const hwid=document.getElementById('checkHwid').value.trim();
-  if(!hwid){toast('⚠️ Vui lòng nhập HWID!','warn');return}
-  log('Đang kiểm tra: '+hwid.slice(0,20)+'...','linfo');
-  try{
-    const r=await fetch(URL_+'/latest',{headers:{'X-Master-Key':KEY_}});
-    if(!r.ok)throw new Error('Kết nối thất bại');
-    const d=await r.json();const h=d.record?.hwids||[];
-    const f=h.find(e=>e.hwid===hwid);
-    if(f){log('HWID HỢP LỆ — User: '+(f.user||'N/A'),'lok');toast('✅ HWID hợp lệ — '+(f.user||'Unknown'),'ok')}
-    else{log('HWID KHÔNG TỒN TẠI trong database.','lwarn');toast('⚠️ HWID chưa đăng ký!','warn')}
-    sOps++;document.getElementById('sessionCount').textContent=sOps;
-  }catch(e){log('Lỗi: '+e.message,'lerr');toast('❌ '+e.message,'err')}
-}
-
-window.addEventListener('load',()=>{log('Hệ thống khởi động — HIEN VIP v2.0','lok');setTimeout(loadAll,600)});
-</script>
-
+        function stopSimulation(message) {
+            isRunning = false;
+            clearTimeout(timer);
+            
+            systemStatus.textContent = "DIE";
+            systemStatus.className = "status-die";
+            btnStart.disabled = false;
+            btnStop.disabled = true;
+            logText.textContent = message;
+        }
+    </script>
 </body>
 </html>
