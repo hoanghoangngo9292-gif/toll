@@ -20,7 +20,7 @@
             border: 3px solid #00ff00;
             border-radius: 10px;
             padding: 25px;
-            width: 320px;
+            width: 340px;
             box-shadow: 0 0 15px #00ff00;
             text-align: center;
         }
@@ -66,18 +66,31 @@
             align-items: center;
             margin-bottom: 12px;
         }
+        .input-group.column {
+            flex-direction: column;
+            align-items: flex-start;
+        }
         .input-group label {
             font-size: 14px;
             color: #ccc;
+            margin-bottom: 5px;
         }
         .input-group input {
             background-color: #262626;
             border: 1px solid #00ff00;
             color: #fff;
-            padding: 5px;
-            width: 80px;
+            padding: 6px;
             border-radius: 4px;
+        }
+        .input-short {
+            width: 80px;
             text-align: center;
+        }
+        .input-full {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: left;
+            font-size: 13px;
         }
         .button-group {
             display: flex;
@@ -115,6 +128,7 @@
             font-size: 13px;
             color: #00fffa;
             text-align: left;
+            min-height: 40px;
         }
     </style>
 </head>
@@ -129,14 +143,19 @@
             <span id="system-status" class="status-die">DIE</span>
         </div>
 
+        <div class="input-group column">
+            <label>Gắn link Facebook mục tiêu:</label>
+            <input type="text" id="target-link" class="input-full" placeholder="https://facebook.com/username...">
+        </div>
+
         <div class="input-group">
             <label>Số lần báo cáo (Loops):</label>
-            <input type="number" id="loops" value="40" min="1">
+            <input type="number" id="loops" class="input-short" value="40" min="1">
         </div>
 
         <div class="input-group">
             <label>Độ trễ tốc độ (ms):</label>
-            <input type="number" id="delay" value="100" min="10">
+            <input type="number" id="delay" class="input-short" value="100" min="10">
         </div>
 
         <div class="button-group">
@@ -146,7 +165,7 @@
 
         <div class="divider"></div>
         <div class="log-box">
-            <p>Trạng thái: <span id="log-text">Đang chờ lệnh...</span></p>
+            <p id="log-text">Trạng thái: Đang chờ lệnh...</p>
         </div>
     </div>
 
@@ -155,12 +174,19 @@
         const btnStop = document.getElementById('btn-stop');
         const systemStatus = document.getElementById('system-status');
         const logText = document.getElementById('log-text');
+        const targetLinkInput = document.getElementById('target-link');
 
         let isRunning = false;
         let currentLoop = 0;
         let timer = null;
 
         btnStart.addEventListener('click', () => {
+            const linkValue = targetLinkInput.value.trim();
+            if (!linkValue) {
+                alert("Vui lòng nhập link Facebook mục tiêu để chạy mô phỏng!");
+                return;
+            }
+
             const totalLoops = parseInt(document.getElementById('loops').value) || 40;
             const delay = parseInt(document.getElementById('delay').value) || 100;
 
@@ -177,10 +203,10 @@
 
                 if (currentLoop < totalLoops) {
                     currentLoop++;
-                    logText.textContent = `🌀 Đang quét FB... (${currentLoop}/${totalLoops})`;
+                    logText.innerHTML = `🔗 Mục tiêu: ${linkValue.substring(0, 20)}...<br>🌀 Đang quét mô phỏng... (${currentLoop}/${totalLoops})`;
                     timer = setTimeout(runSimulation, delay);
                 } else {
-                    stopSimulation("Hoàn thành quá trình quét mô phỏng!");
+                    stopSimulation("Hoàn thành chu trình chạy thử nghiệm!");
                 }
             }
 
@@ -188,7 +214,7 @@
         });
 
         btnStop.addEventListener('click', () => {
-            stopSimulation("TẠM DỪNG");
+            stopSimulation("Hệ thống tạm dừng.");
         });
 
         function stopSimulation(message) {
@@ -199,7 +225,7 @@
             systemStatus.className = "status-die";
             btnStart.disabled = false;
             btnStop.disabled = true;
-            logText.textContent = message;
+            logText.textContent = `Trạng thái: ${message}`;
         }
     </script>
 </body>
